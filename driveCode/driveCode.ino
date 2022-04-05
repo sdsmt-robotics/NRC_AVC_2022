@@ -267,7 +267,7 @@ void initMotors() {
   turnL.write(default_angle_L);
 
   // Main motor
-  motor.attach(11, 1000, 2000);
+  motor.attach(12, 1000, 2000);
   motor.setDrivePower(0);  
 
   //SET UP THE STARTUP PROCEDURE TO HOLD THROTTLE HIGH WHEN ESC IS POWERED ON, HOLD THERE FOR AT LEAST TWO SECONDS, THEN GO LOW
