@@ -33,7 +33,7 @@ float mag_offset_x = 0;
 float mag_offset_y = 0;
 
 //Maximum power allowed
-const float maxPower = 0.25;
+const float maxPower = 0.15;
 
 // Conversion from RPM to M/s
 const float RPM_TO_M_S = (140 * PI) / 1000 / 60;
@@ -69,12 +69,6 @@ void motor_cb( const std_msgs::Float32& msg);
 void servo_cb( const std_msgs::Float32& msg);
 ros::Subscriber<std_msgs::Float32> motor_sub("target_velocity", motor_cb);
 ros::Subscriber<std_msgs::Float32> servo_sub("target_wheel_angle", servo_cb);
-
-float timeFloat = 0; // s
-float increment = 100; // ms
-float powerMultiplier = 0.1;
-uint32_t timeStart = 0; // ms
-uint32_t timeToRun = 10000; // ms
 
 //================SETUP==============================
 void setup() {
