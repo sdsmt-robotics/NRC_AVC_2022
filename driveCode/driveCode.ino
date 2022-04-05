@@ -163,13 +163,13 @@ void setDrivePower(float power)
   // Convert to a motor PWM period
   int period = 0;
   
-  if (power < 0.2) 
+  if (power < maxPower) 
   {
     period = map(int(power * 1000), 0, 1000, 1000, 2000);
   }
   else 
   {
-    period = map(int(0.2 * 1000), 0, 1000, 1000, 2000);
+    period = map(int(maxPower * 1000), 0, 1000, 1000, 2000);
   }
 
   motor.writeMicroseconds(period);
