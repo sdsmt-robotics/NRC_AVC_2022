@@ -71,7 +71,7 @@ class AckPTheta:
         if self.current_point < self.points.shape[0] - 1:
             print('target waypoint: ', self.points[self.current_point + 1])
 
-        d = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
+            d = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
                 (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
 
 	    print('distance', np.sqrt(d))
