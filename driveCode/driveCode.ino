@@ -41,7 +41,13 @@ const float RPM_TO_M_S = (140 * PI) / 1000 / 60;
 // Controller update interval in milliseconds
 const unsigned long UPDATE_INTERVAL = 10;
 
+// LED strip variables
 LedStrip ledStrip(8, 7, 6);
+int runningBlinkPeriod = 800; // ms
+uint32_t runningBlinkLastTime = 0; // ms
+bool runningBlinkState = 0;
+#define COLOR_RUNNING1 255, 0, 255 // purple
+#define COLOR_RUNNING2 0, 255, 255 // teal
 
 //float kp = 0.06, ki = 0.02, kd = 0.0, N = 10;
 float kp = 0.08, ki = 0.1, kd = 0.0, N = 10;
@@ -116,6 +122,22 @@ void loop() {
   nh.spinOnce();
   send_imu_data();
   delay(1);
+
+  // alternate the LED strip between purple and teal
+  if (millis() - runningBlinkLastTime > runningBlinkPeriod)
+  {
+    runningBlinkLastTime = millis();
+    runningBlinkState = !runningBlinkState;
+    
+    if (runningBlinkState)
+    {
+      ledStrip.setColorRGB(COLOR_RUNNING1);
+    }
+    else
+    {
+      ledStrip.setColorRGB(COLOR_RUNNING2);
+    }
+  }
 }
 
 //================CAR Functions======================
