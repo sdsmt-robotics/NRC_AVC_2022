@@ -223,7 +223,14 @@ float getDriveSpeed() {
 void setDrivePower(float power)
 {
   // Convert to a motor PWM period
-  int period = map(int(power * 1000), 0, 1000, 1000, 2000);
+  if (power < 0.2) 
+  {
+    int period = map(int(power * 1000), 0, 1000, 1000, 2000);
+  }
+  else 
+  {
+    int period = map(int(0.2 * 1000), 0, 1000, 1000, 2000);
+  }
 
   motor.writeMicroseconds(period);
 }
