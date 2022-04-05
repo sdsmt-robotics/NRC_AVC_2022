@@ -145,9 +145,9 @@ void setup() {
 
 //================LOOP==============================
 void loop() {
-  //  nh.spinOnce();
-  //  send_imu_data();
-  //  delay(1);
+  nh.spinOnce();
+  send_imu_data();
+  delay(1);
 
   // output a happy little sine wave to the ESC
 //  timeFloat = (float)(millis()) / 1000.0;
@@ -174,10 +174,10 @@ void loop() {
 //    timeStart = millis();
 //  }
 
-  setDriveAngle(25);
-  delay(2000);
-  setDriveAngle(-25);
-  delay(2000);
+  //setDriveAngle(25);
+  //delay(2000);
+  //setDriveAngle(-25);
+  //delay(2000);
 }
 
 //================CAR Functions======================
