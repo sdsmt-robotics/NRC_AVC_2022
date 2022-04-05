@@ -12,7 +12,7 @@ from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 from scipy import linalg
 import conversion_lib
-from blob_detection_v2 import *
+from blob_detection_v6 import *
 
 #Does this need to be globaled? I really hope not
 d_camera_array = []
@@ -74,7 +74,7 @@ class AckPTheta:
             d = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
                 (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
 
-	    print('distance', np.sqrt(d))
+            print('distance', np.sqrt(d))
             ## Compute current position based on last time step and measurement
             # From EKF
             self.loc[0] = data.pose.pose.position.x
@@ -102,24 +102,24 @@ class AckPTheta:
                 (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
 
     	    #Distance Modify/average here!!!!
-    	    cap = cv.VideoCapture(0) #Check this!!!
-            _,frame = cap.read()
-    	    d_camera = detect(frame, 0.3, self.cv_color[self.current_point + 1])
-    	    d_camera_array.append([d_camera, time.time()])
+            d_camera = None
+            cap = cv.VideoCapture(0)
+            for i in range(0, 10):
+                d_camera = detect(cap, 0.3, self.cv_color[self.current_point + 1])
+                d_camera_array.append([d_camera, time.time()])
 
-            #dummy_length = len(d_camera_array) - j
             if d_camera == None:
                 vel = 0
                 accel = 0
                 vel_array = []
-                if len(d_camera_array[0:j]) < 5:
+                if len(d_camera_array) < 11:
                   d_camera = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
                              (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
                 else:
                   val_array = []
-                  for k in range(0, dummy_length):
-                    if (d_camera_array[dummy_length - k][0] != None) and (len(val_array) <= 5):
-                      val_array.append(d_camera_array[dummy_length - k])
+                  for k in range(0, len(d_camera_array)):
+                    if (d_camera_array[len(d_camera_array) - k][0] != None) and (len(val_array) >= 11):
+                      val_array.append(d_camera_array[len(d_camera_array) - k])
                   val_array_np = np.array(val_array)
                   dist_array = val_array_np[:,0]
                   time_array = val_array_np[:,1]
