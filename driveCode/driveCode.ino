@@ -95,10 +95,10 @@ void setup() {
   ledStrip.setColorRGB(0, 0, 255);
   IMU.begin();
   delay(1000);
-  //imu_calibrate_hard_iron(calibration_duration);
+  imu_calibrate_hard_iron(calibration_duration);
 
+  ledStrip.setColorRGB(255, 255, 0);
   if (DEBUG) Serial.println("Calibrated, initializing ROS...");
-
 
   // Initialize all publishers and subscribers
   nh.initNode();
@@ -114,70 +114,14 @@ void setup() {
   encoder.init();
   pinMode(4, INPUT);
   if (DEBUG) Serial.println("Ready!");
-
-//  // hold the throttle at its max for ESC startup, this will "train" a new max throttle value
-//  motor.writeMicroseconds(2000);
-//  delay(3000);
-//  Serial.println("Calibrating high throttle value, waiting for input...");
-//  while (Serial.read() == -1);
-//
-//  // take the throttle low when a key is pressed
-//  motor.writeMicroseconds(1000);
-//  Serial.println("Calibrating low throttle value...");
-//  delay(5000);
-//  Serial.println("Begin!");
-//  ledStrip.setColorRGB(0, 255, 0);
-//  timeStart = millis();
-  
-  // wait for something to come in on the serial terminal to start
-  while (Serial.read() != -1); // clear the buffer
-  Serial.println("Waiting for input to start...");
-  while (Serial.read() == -1);
-  Serial.println("Begin!");
-  ledStrip.setColorRGB(0, 255, 0);
-  timeStart = millis();
+  ledStrip.setColorRGB(255, 0, 255);
 }
-
-//uint32_t prevTime = 0;
-//uint32_t period = 4000;
-//bool state = 1;
-//float vel = 0;
 
 //================LOOP==============================
 void loop() {
   nh.spinOnce();
   send_imu_data();
   delay(1);
-
-  // output a happy little sine wave to the ESC
-//  timeFloat = (float)(millis()) / 1000.0;
-//  float drivePower = abs(sin(timeFloat / 3.0) * powerMultiplier);
-//  setDrivePower(drivePower);
-//  Serial.print("Power: ");
-//  Serial.println(drivePower);
-//  delay(100);
-//
-//  // stop the car after a while
-//  if (millis() - timeStart > timeToRun)
-//  {
-//    setDrivePower(0);
-//    while (Serial.read() != -1); // clear the serial buffer
-//    
-//    Serial.println("Stopped!");
-//    Serial.println("Waiting for input to start...");
-//    ledStrip.setColorRGB(0, 0, 255);
-//
-//    // wait for something to come in on the serial terminal
-//    while (Serial.read() == -1);
-//    
-//    ledStrip.setColorRGB(0, 255, 0);
-//    timeStart = millis();
-//  }
-
-  //setDriveAngle(25);
-  //delay(2000);
-  //setDriveAngle(-25);
-  //delay(2000);
 }
 
 //================CAR Functions======================
@@ -223,13 +167,15 @@ float getDriveSpeed() {
 void setDrivePower(float power)
 {
   // Convert to a motor PWM period
+  int period = 0;
+  
   if (power < 0.2) 
   {
-    int period = map(int(power * 1000), 0, 1000, 1000, 2000);
+    period = map(int(power * 1000), 0, 1000, 1000, 2000);
   }
   else 
   {
-    int period = map(int(0.2 * 1000), 0, 1000, 1000, 2000);
+    period = map(int(0.2 * 1000), 0, 1000, 1000, 2000);
   }
 
   motor.writeMicroseconds(period);
@@ -275,9 +221,7 @@ void initMotors() {
 
   // Main motor
   motor.attach(12, 1000, 2000);
-  motor.setDrivePower(0);  
-
-  //SET UP THE STARTUP PROCEDURE TO HOLD THROTTLE HIGH WHEN ESC IS POWERED ON, HOLD THERE FOR AT LEAST TWO SECONDS, THEN GO LOW
+  setDrivePower(0);
 }
 
 ////================TESTING FUNCTIONS===================
