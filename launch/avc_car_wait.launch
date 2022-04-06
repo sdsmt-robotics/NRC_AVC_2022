@@ -9,7 +9,8 @@
 
   <node pkg="avc_nrc_2020" type="ACK_EKF_step.py" name="ack_ekf" output="screen">
   </node>
-
-  <node pkg="avc_nrc_2020" type="ACK_p-theta_step.py" name="ack_p_theta" output="screen">
+  
+  <arg name="node_start_delay" default="15.0" />
+  <node pkg="avc_nrc_2020" type="ACK_p-theta_step.py" name="ack_p_theta" output="screen"  launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
   </node>
 </launch>

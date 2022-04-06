@@ -15,8 +15,8 @@ class TestDriving:
     def __init__(self, points_array=None, r=0.07, l=0.36, k_p=50, robot_d=1):
 
         # Publishes the current [x, y, theta] state estimate
-        self.angle_pub = rospy.Publisher("turn_angle", Int16)
-        self.speed_pub = rospy.Publisher("speed_set", Float32)
+        self.angle_pub = rospy.Publisher("turn_angle", queue_size=1) #Int16
+        self.speed_pub = rospy.Publisher("speed_set", queue_size=1) #Float32
 	self.k = 0
         self.velocity = np.concatenate((np.arange(50), np.arange(50)[::-1])) / 25.0
         self.turn_angle = np.concatenate((np.arange(50), np.arange(50)[::-1])) + (90 - 25)

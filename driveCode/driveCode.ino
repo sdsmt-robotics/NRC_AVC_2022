@@ -88,7 +88,7 @@ void setup() {
 
   //Initialize servos and main motor
   if (DEBUG) Serial.println("Initializing motors...");
-  speedController.setLimits(0, 0.3);
+  speedController.setLimits(0, 0.4);
   initMotors();
 
   if (DEBUG) Serial.println("Calibrating IMU, Please spin me around!");
@@ -185,14 +185,7 @@ void setDrivePower(float power)
   // Convert to a motor PWM period
   int period = 0;
   
-  if (power < maxPower) 
-  {
-    period = map(int(power * 1000), 0, 1000, 1000, 2000);
-  }
-  else 
-  {
-    period = map(int(maxPower * 1000), 0, 1000, 1000, 2000);
-  }
+  period = map(int(power * 1000), 0, 1000, 1000, 2000);
 
   motor.writeMicroseconds(period);
 }

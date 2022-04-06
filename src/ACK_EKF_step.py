@@ -156,16 +156,17 @@ class AckEkf:
             self.R = self.R_none
 
         if self.last_time - self.last_gps_time > self.sensor_timeout:
-            print('bad GPS data')
+            #print('bad GPS data')
+            pass
 
         # Compute one step of Kalman filter
         # State prediction
         self.xp[0] = self.xf[0] + dt * self.w * np.cos(self.xf[2])
         self.xp[1] = self.xf[1] + dt * self.w * np.sin(self.xf[2])
         self.xp[2] = self.xf[2] + dt * self.w * np.tan(self.p) / self.L
-        print(self.xp)
-        print(self.xf)
-        print()
+        #print(self.xp)
+        #print(self.xf)
+        #print()
 
         # Compute the motion jacobian H
         F1 = [1, 0, -dt * self.w * np.sin(self.xf[2])]
@@ -234,7 +235,7 @@ class AckEkf:
             self.mag_zero = conversion_lib.quat_from_pose2eul(msg.orientation)[0]
             self.t = 1
         self.mag_yaw = conversion_lib.quat_from_pose2eul(msg.orientation)[0] - self.mag_zero
-        print(self.mag_yaw, self.mag_zero)
+        #print(self.mag_yaw, self.mag_zero)
 
 
 def main():

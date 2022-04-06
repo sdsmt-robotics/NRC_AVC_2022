@@ -34,6 +34,10 @@ class AckPTheta:
         time.sleep(delay_time)
         print('started')
         self.start_time = rospy.Time.now().to_sec()
+        self.last_print_time = 0
+        self.print_period = 1
+        
+        #print('+=================+',self.target_vel)
 
         # Set up waypoint array
         if points_array is None:
@@ -45,6 +49,8 @@ class AckPTheta:
         self.current_point = 0
         self.loc = init_state[0:3]
 
+	print("+=========Waypoints Configured=========+")
+
         # Publishes the current [x, y, theta] state estimate
         self.angle_pub = rospy.Publisher("target_wheel_angle", Float32, queue_size=1)
         self.speed_pub = rospy.Publisher("target_velocity", Float32, queue_size=1)
@@ -52,6 +58,8 @@ class AckPTheta:
         # Computes the current state estimate from the gps data
         self.ekf_sub = rospy.Subscriber("/EKF/Odometry", Odometry, self.callback)
         self.velocity_sub = rospy.Subscriber("/speed_current", Float32, self.velocity_callback)
+
+	print("+========= Configured=========+")
 
     # Returns the angle difference between the current trajectory and the goal, measured CCW from the current trajectory
     def theta_error(self, x, y, t, x_d, y_d):
@@ -73,7 +81,7 @@ class AckPTheta:
 
             d = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
                 (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
-
+            
             print('distance', np.sqrt(d))
             ## Compute current position based on last time step and measurement
             # From EKF
@@ -109,24 +117,21 @@ class AckPTheta:
                 d_camera_array.append([d_camera, time.time()])
 
             if d_camera == None:
-                vel = 0
-                accel = 0
-                vel_array = []
                 if len(d_camera_array) < 11:
                   d_camera = (self.points[self.current_point + 1][0] - self.loc[0]) ** 2 + \
                              (self.points[self.current_point + 1][1] - self.loc[1]) ** 2
                 else:
-                  val_array = []
+                  val_array = np.array([[7, time.time()]]) #20?
                   for k in range(0, len(d_camera_array)):
-                    if (d_camera_array[len(d_camera_array) - k][0] != None) and (len(val_array) >= 11):
-                      val_array.append(d_camera_array[len(d_camera_array) - k])
-                  val_array_np = np.array(val_array)
-                  dist_array = val_array_np[:,0]
-                  time_array = val_array_np[:,1]
+                    if (d_camera_array[len(d_camera_array) - k - 1][0] != None):
+                      np.append(val_array, np.array(d_camera_array[len(d_camera_array) - k])) #check here      
+                  #val_array_np = np.array(val_array)
+                  dist_array = val_array[:,0]
+                  time_array = val_array[:,1]
 
                   vel_array = []
                   accel_array = []
-                  for i in range(0, len(val_array_np) - 1):
+                  for i in range(0, len(val_array) - 1):
                     vel_array.append((dist_array[i + 1] - dist_array[i]) / (time_array[i + 1] - time_array[i]))
 
                     try:
@@ -135,13 +140,17 @@ class AckPTheta:
                       pass
 
                   x0 = val_array[len(val_array) - 1][0]
-                  t = (0.1 * (1 + np.random.random() / 10))  #time.time() - val_array[len(val_array)][1]
+                  t = time.time() - val_array[len(val_array) - 1][1]  #time.time() - val_array[len(val_array)][1]
                   vel_avg = np.average(vel_array)
                   accel_avg = np.average(accel_array)
 
-                  d_camera = x0 + (vel_avg * t) + (0.5 * accel_avg * (t ** 2))
+                  d_camera = (x0 + (vel_avg * t) + (0.5 * accel_avg * (t ** 2))) * 0.3048
+                  if (time.time() - self.last_print_time > self.print_period):
+                    print("I am using the camera and see", d_camera, self.cv_color[self.current_point + 1])
+                    self.last_print_time = time.time()
 
             d = (d + d_camera) / 2
+            
 
             if d < self.robot_d_sq:
                 self.current_point += 1

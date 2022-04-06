@@ -130,20 +130,21 @@ def detect(cap, scale, color):
         kp = blob_detection(hsv, inv_mask, "blue")
 
         #Used for video demonstration
-        #frame_with_keypoints = cv.drawKeypoints(frame, kp, np.array([]), (255, 0, 0), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        frame_with_keypoints = cv.drawKeypoints(frame, kp, np.array([]), (255, 0, 0), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         
-        #cv.imshow("Keypoints", frame_with_keypoints) #frame_with_keypoints_bry
+        try:
+            print(distance(kp[0].size))
+        except IndexError:
+            print(None)
+        
+        cv.imshow("Keypoints", frame_with_keypoints) #frame_with_keypoints_bry
         k = cv.waitKey(5) & 0xFF
         if k == 27:
             break
-        #cv.destroyAllWindows()
+    cv.destroyAllWindows()
 
-        try:
-            return distance(kp[0].size)
-        except IndexError:
-            return None
 
-"""
+
 #Comment this out you stupid idiot!
 #Define camera input. Can be file or camera index
 capture = cv.VideoCapture(0) # , cv.CAP_DSHOW
@@ -153,5 +154,5 @@ while (True):
     #capture = capture.set(CV_CAP_PROP_POS_FRAMES,count-1)
     print(detect(capture, 0.3, 'blue'))
     i += 1
-"""
+
 
